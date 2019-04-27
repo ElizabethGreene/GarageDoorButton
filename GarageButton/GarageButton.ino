@@ -20,14 +20,14 @@ ESP8266WebServer server(80);
 
 void handleRoot() {
   digitalWrite(LED_BUILTIN, 1);
-  server.send(200, "text/html","<!DOCTYPE html><html><head><title>Garage Door Button</title><style> div { display: block; text-align: center;}</style></head><body><div><form action=\"\\push\" method=\"post\"><input type=\"submit\" value=\"Push it\"/></form></div></body></html>");
+  server.send(200, "text/html","<!DOCTYPE html><html><head><title>Garage Door Button</title><style> div { display: block; text-align: center; margin: auto;}  .block { display: block; width: 100%; height: 30%; border: none; background-color: #4CAF50; padding: 56px 28px; font-size: 32px; cursor: pointer; text-align: center; }</style></head><body><div><form action=\"\\push\" method=\"post\"><input type=\"submit\" class=\"block\" value=\"Push it\"/></form></div></body></html>");
 }
 
 void handlePush() {
-  server.send(200, "text/html", "<!DOCTYPE html><html><head><title>Garage Door Button</title><style>div { display: block; text-align: center;}</style>  </head>  <body><div>    Button has been pushed.  </div></body></html>");
-  digitalWrite(GPIORELAY, HIGH);
+  server.send(200, "text/html", "<!DOCTYPE html><html> <head>    <title>Garage Door Button</title>    <style> div { display: block; text-align: center; margin: auto;}    .block {  display: block;  width: 100%;  height: 30%;  border: none;  background-color: #FFFF00;  padding: 56px 28px;  font-size: 32px;  cursor: pointer;  text-align: center;}</style><meta http-equiv=\"refresh\" content=\"5; url=\\\" />  </head>  <body>    <div class=\"block\">Button has been pushed!</div></body></html>");
+  digitalWrite(GPIORELAY, 0);
   delay(2000);                      // Wait for a second
-  digitalWrite(GPIORELAY, LOW);
+  digitalWrite(GPIORELAY, 1);
 }
 
 void handleNotFound() {
@@ -52,6 +52,7 @@ void setup(void) {
   pinMode(LED_BUILTIN, OUTPUT); // Initialize the built-in LED as an output
 
   digitalWrite(LED_BUILTIN, 0);
+  digitalWrite(GPIORELAY,1);
   Serial.begin(115200);
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -88,6 +89,8 @@ void setup(void) {
 void loop(void) {
   server.handleClient();
   MDNS.update();
-
-
+  delay(1000);
+  //Uncomment this to output the free heap size to serial every loop.
+  //Use it to find memory leaks.
+  Serial.println(ESP.getFreeHeap(),DEC);
 }
